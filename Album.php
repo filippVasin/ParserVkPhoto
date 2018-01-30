@@ -16,7 +16,6 @@ class Album {
     public $count;
     public $offset;
     public $rev;
-    public $photo_sizes;
     public $save_folder;
 
     /**
