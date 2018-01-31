@@ -8,6 +8,7 @@ class Album {
      * @var $count - количество фотографий
      * @var $offset - сдвиг
      * @var $rev - сортировка (0/1)
+     * @var $save_folder - дириктория для сохранения фотографий
      */
 
     public $group_id;
@@ -49,16 +50,16 @@ class Album {
         /**
          * выбираем самые большие из возможных фотографий
          */
-        $img_url = array();
+        $img_urls = array();
         foreach($response['response'] as $key=>$item){
             if (array_key_exists('src_xxbig', $item)) {
-                $img_url[] = $item['src_xxbig'];
+                $img_urls[] = $item['src_xxbig'];
             } else {
                 if (array_key_exists('src_xbig', $item)) {
-                    $img_url[] = $item['src_xbig'];
+                    $img_urls[] = $item['src_xbig'];
                 } else {
                     if (array_key_exists('src_big', $item)) {
-                        $img_url[] = $item['src_big'];
+                        $img_urls[] = $item['src_big'];
                     }
                 }
             }
@@ -67,8 +68,7 @@ class Album {
         /**
          * Обходим массив ссылок на фотографии и сохраняем
          */
-        $counter = 0;
-        foreach($img_url as $key=>$img_url){
+        foreach($img_urls as $key=>$img_url){
             $arr = explode(".",substr($img_url, -15));
             $img_id = $arr[0];
             $ch = curl_init($img_url);
@@ -80,7 +80,6 @@ class Album {
             sleep(0.25);
             curl_close($ch);
             fclose($fp);
-            ++$counter;
         }
 
         /**
@@ -90,3 +89,22 @@ class Album {
     }
 
 }
+
+
+/**
+ * Example
+ */
+
+  $album = new Album;
+
+  $album->group_id = '-60394803';
+  $album->album_id = '187786149';
+  $album->count = 50;
+  $album->offset = 0;
+  $album->rev = 1;
+  $album->access_token = '{token}'; // получить в ВК
+  $album->$save_folder = 'c:/images/';
+
+  $text = $album->download_album();
+
+  echo 'Скачано '. $text . ' фотографий';
